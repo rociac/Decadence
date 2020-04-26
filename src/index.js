@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import SceneMain from './SceneMain';
 
 const config = {
   type: Phaser.WEBGL,
@@ -11,10 +12,9 @@ const config = {
       gravity: { y: 1500 },
     },
   },
-  scene: [],
+  scene: [SceneMain],
   pixelArt: true,
   roundPixels: true,
 };
 
 const game = new Phaser.Game(config);
-console.log('Its working');
