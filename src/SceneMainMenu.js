@@ -1,3 +1,5 @@
+import Phaser from 'phaser';
+
 class SceneMainMenu extends Phaser.Scene {
   constructor() {
     super({ key: 'SceneMainMenu ' });
@@ -18,13 +20,13 @@ class SceneMainMenu extends Phaser.Scene {
       fontSize: 48,
       fontStyle: 'bold',
       color: '#ffffff',
-      align: 'center'
+      align: 'center',
     });
 
     this.btnPlay = this.add.sprite(
       this.game.config.width * 0.5,
       this.game.config.height * 0.5,
-      'btnPlay'
+      'btnPlay',
     );
 
     this.btnPlay.setInteractive();
@@ -38,7 +40,7 @@ class SceneMainMenu extends Phaser.Scene {
     });
 
     this.btnPlay.on('pointerdown', () => {
-      this.btnPlay.setTexture('btnPlayDown')
+      this.btnPlay.setTexture('btnPlayDown');
     }, this);
 
     this.btnPlay.on('pointerup', () => {

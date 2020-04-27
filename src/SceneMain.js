@@ -1,4 +1,7 @@
-import { Player, FireSkull, HellBeast } from './Entities';
+import Phaser from 'phaser';
+import Player from './Entities/Player';
+import FireSkull from './Entities/FireSkull';
+import HellBeast from './Entities/HellBeast';
 
 class SceneMain extends Phaser.Scene {
   constructor() {
@@ -49,7 +52,7 @@ class SceneMain extends Phaser.Scene {
       {
         frameWidth: 64,
         frameHeight: 64,
-      }
+      },
     );
   }
 
@@ -116,20 +119,20 @@ class SceneMain extends Phaser.Scene {
       this,
       this.game.config.width * 0.5,
       this.game.config.height * 0.5,
-      'hero'
+      'hero',
     );
 
     this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.keyK = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     this.keySpace = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.SPACE
+      Phaser.Input.Keyboard.KeyCodes.SPACE,
     );
 
     this.enemies = this.add.group();
     this.time.addEvent({
       delay: 1000,
-      callback: function () {
+      callback() {
         let enemy = null;
         if (Phaser.Math.Between(0, 10) >= 3) {
           if (this.getEnemiesByType('FireSkull').length < 5) {
@@ -140,7 +143,7 @@ class SceneMain extends Phaser.Scene {
             enemy = new HellBeast(
               this,
               1200,
-              600
+              600,
             );
           }
         }
@@ -160,14 +163,22 @@ class SceneMain extends Phaser.Scene {
       align: 'center',
     });
 
-    this.physics.add.collider(this.player, this.enemies, function (
+    this.lives = this.add.text(1000, 16, 'LIVES: ', {
+      fontFamily: 'monospace',
+      fontSize: 48,
+      fontStyle: 'bold',
+      color: '#ffffff',
+      align: 'center',
+    });
+
+    this.physics.add.collider(this.player, this.enemies, (
       player,
-      enemy
-    ) {
+      enemy,
+    ) => {
       if (
-        enemy &&
-        !player.getData('isAttacking') &&
-        !player.getData('isHurt')
+        enemy
+        && !player.getData('isAttacking')
+        && !player.getData('isHurt')
       ) {
         enemy.explode(true);
         player.hurt();
@@ -178,10 +189,10 @@ class SceneMain extends Phaser.Scene {
       }
     });
 
-    this.physics.add.overlap(this.player, this.enemies, function (
+    this.physics.add.overlap(this.player, this.enemies, (
       player,
-      enemy
-    ) {
+      enemy,
+    ) => {
       if (player.getData('isAttacking')) {
         enemy.destroy();
         player.data.values.score += 50;
@@ -191,9 +202,9 @@ class SceneMain extends Phaser.Scene {
 
   getEnemiesByType(type) {
     const arr = [];
-    for (let i = 0; i < this.enemies.getChildren().length; i++) {
-      let enemy = this.enemies.getChildren()[i];
-      if (enemy.getData('type') == type) {
+    for (let i = 0; i < this.enemies.getChildren().length; i += 1) {
+      const enemy = this.enemies.getChildren()[i];
+      if (enemy.getData('type') === type) {
         arr.push(enemy);
       }
     }
@@ -201,7 +212,8 @@ class SceneMain extends Phaser.Scene {
   }
 
   update() {
-    this.scoreText.setText('SCORE:' + this.player.getData('score'));
+    this.scoreText.setText(`SCORE:${this.player.getData('score')}`);
+    this.lives.setText(`LIVES:${this.player.getData('hitPoints')}`);
     if (!this.player.getData('isDead')) {
       this.player.update();
       if (this.keyK.isDown && !this.player.getData('isHurt')) {
@@ -214,15 +226,15 @@ class SceneMain extends Phaser.Scene {
         });
       } else {
         if (
-          this.keyD.isDown &&
-          !this.player.getData('isAttacking') &&
-          !this.player.getData('isHurt')
+          this.keyD.isDown
+          && !this.player.getData('isAttacking')
+          && !this.player.getData('isHurt')
         ) {
           this.player.moveRight();
         } else if (
-          this.keyA.isDown &&
-          !this.player.getData('isAttacking') &&
-          !this.player.getData('isHurt')
+          this.keyA.isDown
+          && !this.player.getData('isAttacking')
+          && !this.player.getData('isHurt')
         ) {
           this.player.moveLeft();
         }
@@ -234,29 +246,29 @@ class SceneMain extends Phaser.Scene {
           this.player.setData('moveLeft', false);
         }
         if (
-          this.keySpace.isDown &&
-          this.player.body.onFloor() &&
-          !this.player.getData('isHurt')
+          this.keySpace.isDown
+          && this.player.body.onFloor()
+          && !this.player.getData('isHurt')
         ) {
           this.player.jump();
         }
         if (
-          this.player.body.velocity.x === 0 &&
-          this.player.body.velocity.y === 0 &&
-          this.player.body.onFloor() &&
-          !this.player.getData('isHurt')
+          this.player.body.velocity.x === 0
+          && this.player.body.velocity.y === 0
+          && this.player.body.onFloor()
+          && !this.player.getData('isHurt')
         ) {
           this.player.play('idle', true);
         }
       }
     }
 
-    for (let i = 0; i < this.enemies.getChildren().length; i++) {
-      let enemy = this.enemies.getChildren()[i];
+    for (let i = 0; i < this.enemies.getChildren().length; i += 1) {
+      const enemy = this.enemies.getChildren()[i];
       enemy.update();
       if (
-        enemy.x < -enemy.displayWidth ||
-        enemy.x > this.game.config.width + enemy.displayWidth
+        enemy.x < -enemy.displayWidth
+        || enemy.x > this.game.config.width + enemy.displayWidth
       ) {
         if (enemy) {
           if (enemy.onDestroy !== undefined) {

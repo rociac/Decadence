@@ -1,10 +1,12 @@
+import Phaser from 'phaser';
+
 class SceneGameOver extends Phaser.Scene {
   constructor() {
     super({ key: 'SceneGameOver' });
   }
 
   preload() {
-    this.load.image('town', './assets/town.png')
+    this.load.image('town', './assets/town.png');
     this.load.image('btnRestart', './assets/btnRestart.png');
     this.load.image('btnRestartHover', './assets/btnRestart.png');
     this.load.image('btnRestart', './assets/btnRestart.png');
@@ -17,21 +19,20 @@ class SceneGameOver extends Phaser.Scene {
       fontSize: 48,
       fontStyle: 'bold',
       color: '#ffffff',
-      align: 'center'
+      align: 'center',
     });
     this.title.setOrigin(0.5);
 
     this.btnRestart = this.add.sprite(
       this.game.config.width * 0.5,
       this.game.config.height * 0.5,
-      'btnRestart'
+      'btnRestart',
     );
 
     this.btnRestart.setInteractive();
 
     this.btnRestart.on('pointerover', () => {
       this.btnRestart.setTexture('btnRestartHover');
-
     }, this);
 
     this.btnRestart.on('pointerout', () => {
