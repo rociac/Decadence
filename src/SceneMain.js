@@ -1,3 +1,5 @@
+import { Player, FireSkull, HellBeast } from './Entities';
+
 class SceneMain extends Phaser.Scene {
   constructor() {
     super({ key: 'SceneMain' });
