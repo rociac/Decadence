@@ -150,6 +150,14 @@ class SceneMain extends Phaser.Scene {
       loop: true,
     });
 
+    this.scoreText = this.add.text(16, 16, 'SCORE: ', {
+      fontFamily: 'monospace',
+      fontSize: 48,
+      fontStyle: 'bold',
+      color: '#ffffff',
+      align: 'center',
+    });
+
     this.physics.add.collider(this.player, this.enemies, function (
       player,
       enemy
@@ -179,7 +187,84 @@ class SceneMain extends Phaser.Scene {
     });
   }
 
-  update() { }
+  getEnemiesByType(type) {
+    const arr = [];
+    for (let i = 0; i < this.enemies.getChildren().length; i++) {
+      let enemy = this.enemies.getChildren()[i];
+      if (enemy.getData('type') == type) {
+        arr.push(enemy);
+      }
+    }
+    return arr;
+  }
+
+  update() {
+    this.scoreText.setText('SCORE:' + this.player.getData('score'));
+    if (!this.player.getData('isDead')) {
+      this.player.update();
+      if (this.keyK.isDown && !this.player.getData('isHurt')) {
+        this.player.setData('isAttacking', true);
+        this.time.addEvent({
+          delay: 400,
+          callback: () => {
+            this.player.setData('isAttacking', false);
+          },
+        });
+      } else {
+        if (
+          this.keyD.isDown &&
+          !this.player.getData('isAttacking') &&
+          !this.player.getData('isHurt')
+        ) {
+          this.player.moveRight();
+        } else if (
+          this.keyA.isDown &&
+          !this.player.getData('isAttacking') &&
+          !this.player.getData('isHurt')
+        ) {
+          this.player.moveLeft();
+        }
+
+        if (this.keyD.isUp) {
+          this.player.setData('moveRight', false);
+        }
+        if (this.keyA.isUp) {
+          this.player.setData('moveLeft', false);
+        }
+        if (
+          this.keySpace.isDown &&
+          this.player.body.onFloor() &&
+          !this.player.getData('isHurt')
+        ) {
+          this.player.jump();
+        }
+        if (
+          this.player.body.velocity.x === 0 &&
+          this.player.body.velocity.y === 0 &&
+          this.player.body.onFloor() &&
+          !this.player.getData('isHurt')
+        ) {
+          this.player.play('idle', true);
+        }
+      }
+    }
+
+    for (let i = 0; i < this.enemies.getChildren().length; i++) {
+      let enemy = this.enemies.getChildren()[i];
+      enemy.update();
+      if (
+        enemy.x < -enemy.displayWidth ||
+        enemy.x > this.game.config.width + enemy.displayWidth
+      ) {
+        if (enemy) {
+          if (enemy.onDestroy !== undefined) {
+            enemy.onDestroy();
+          }
+          enemy.destroy();
+        }
+      }
+    }
+  }
 }
 
 export default SceneMain;
