@@ -109,9 +109,77 @@ class SceneMain extends Phaser.Scene {
       frameRate: 20,
       repeat: -1,
     });
+
+    this.player = new Player(
+      this,
+      this.game.config.width * 0.5,
+      this.game.config.height * 0.5,
+      'hero'
+    );
+
+    this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.keyK = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+    this.keySpace = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
+
+    this.enemies = this.add.group();
+    this.time.addEvent({
+      delay: 1000,
+      callback: function () {
+        let enemy = null;
+        if (Phaser.Math.Between(0, 10) >= 3) {
+          if (this.getEnemiesByType('FireSkull').length < 5) {
+            enemy = new FireSkull(this, 60, 600);
+          }
+        } else if (Phaser.Math.Between(0, 10) >= 5) {
+          if (this.getEnemiesByType('HellBeast').length < 5) {
+            enemy = new HellBeast(
+              this,
+              1200,
+              600
+            );
+          }
+        }
+        if (enemy !== null) {
+          this.enemies.add(enemy);
+        }
+      },
+      callbackScope: this,
+      loop: true,
+    });
+
+    this.physics.add.collider(this.player, this.enemies, function (
+      player,
+      enemy
+    ) {
+      if (
+        enemy &&
+        !player.getData('isAttacking') &&
+        !player.getData('isHurt')
+      ) {
+        enemy.explode(true);
+        player.hurt();
+        player.play('hurt');
+        player.on('animationcomplete', () => {
+          player.setData('isHurt', false);
+        });
+      }
+    });
+
+    this.physics.add.overlap(this.player, this.enemies, function (
+      player,
+      enemy
+    ) {
+      if (player.getData('isAttacking')) {
+        enemy.destroy();
+        player.data.values.score += 50;
+      }
+    });
   }
 
-  update() {}
+  update() { }
 }
 
 export default SceneMain;
