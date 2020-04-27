@@ -2,6 +2,13 @@
 
 > This is a small and simple game built for the JavaScript Capstone Project, consists on a character killing demons each one grants points. The goal is to have the biggest score possible.
 
+>Controls:
+
+A (Move Left)
+D (Move Right)
+K (Attack)
+Space (Jump)
+
 ## Built With
 
 - HTML5,
