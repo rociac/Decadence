@@ -1,35 +1,15 @@
 const path = require('path');
+const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const common = require('./webpack.common');
 
-module.exports = {
+module.exports = merge(common, {
   mode: 'development',
-  devtool: 'eval-source-map',
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        },
-      },
-      {
-        test: [/\.vert$/, /\.frag$/],
-        use: 'raw-loader',
-      },
-      {
-        test: /\.(gif|png|jpe?g|svg|xml)$/i,
-        use: 'file-loader',
-      },
-    ],
+  output: {
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
   },
-  plugins: [
-    new CleanWebpackPlugin({
-      root: path.resolve(__dirname, '../'),
-    }),
-    new HtmlWebpackPlugin({
-      template: './index.html',
-    }),
-  ],
-};
+  plugins: [new HtmlWebpackPlugin({
+    template: './src/template.html',
+  })],
+});

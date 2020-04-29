@@ -9,46 +9,47 @@ class SceneMain extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('town', './assets/town.png');
+    this.load.image('town', './src/assets/town.png');
+    this.load.audio('song', './src/assets/song.mp3');
 
-    this.load.spritesheet('hero', './assets/hero-idle.png', {
+    this.load.spritesheet('hero', './src/assets/hero-idle.png', {
       frameWidth: 38,
       frameHeight: 48,
     });
 
-    this.load.spritesheet('hero-run', './assets/hero-run.png', {
+    this.load.spritesheet('hero-run', './src/assets/hero-run.png', {
       frameWidth: 66,
       frameHeight: 48,
     });
 
-    this.load.spritesheet('hero-jump', './assets/hero-jump.png', {
+    this.load.spritesheet('hero-jump', './src/assets/hero-jump.png', {
       frameWidth: 61,
       frameHeight: 61,
     });
 
-    this.load.spritesheet('hero-attack', './assets/hero-attack.png', {
+    this.load.spritesheet('hero-attack', './src/assets/hero-attack.png', {
       frameWidth: 96,
       frameHeight: 48,
     });
 
-    this.load.spritesheet('hero-hurt', './assets/hero-hurt.png', {
+    this.load.spritesheet('hero-hurt', './src/assets/hero-hurt.png', {
       frameWidth: 48,
       frameHeight: 48,
     });
 
-    this.load.spritesheet('fire-skull', './assets/fire-skull.png', {
+    this.load.spritesheet('fire-skull', './src/assets/fire-skull.png', {
       frameWidth: 96,
       frameHeight: 112,
     });
 
-    this.load.spritesheet('hell-beast-idle', './assets/hell-beast-idle.png', {
+    this.load.spritesheet('hell-beast-idle', './src/assets/hell-beast-idle.png', {
       frameWidth: 55,
       frameHeight: 67,
     });
 
     this.load.spritesheet(
       'hell-beast-attack',
-      './assets/hell-beast-attack.png',
+      './src/assets/hell-beast-attack.png',
       {
         frameWidth: 64,
         frameHeight: 64,
@@ -58,6 +59,8 @@ class SceneMain extends Phaser.Scene {
 
   create() {
     this.add.image(400, 300, 'town').setScale(1.8);
+    this.music = this.sound.add('song', { loop: 'true' });
+    this.music.play();
 
     this.anims.create({
       key: 'idle',

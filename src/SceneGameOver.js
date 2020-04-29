@@ -6,10 +6,9 @@ class SceneGameOver extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('town', './assets/town.png');
-    this.load.image('btnRestart', './assets/btnRestart.png');
-    this.load.image('btnRestartHover', './assets/btnRestart.png');
-    this.load.image('btnRestart', './assets/btnRestart.png');
+    this.load.image('btnRestart', './src/assets/btnRestart.png');
+    this.load.image('btnRestartHover', './src/assets/btnRestart.png');
+    this.load.image('btnRestart', './src/assets/btnRestart.png');
   }
 
   create() {
@@ -33,20 +32,20 @@ class SceneGameOver extends Phaser.Scene {
 
     this.btnRestart.on('pointerover', () => {
       this.btnRestart.setTexture('btnRestartHover');
-    }, this);
+    });
 
     this.btnRestart.on('pointerout', () => {
-      this.setTexture('btnRestart');
+      this.btnRestart.setTexture('btnRestart');
     });
 
     this.btnRestart.on('pointerdown', () => {
       this.btnRestart.setTexture('btnRestartDown');
-    }, this);
+    });
 
     this.btnRestart.on('pointerup', () => {
       this.btnRestart.setTexture('btnRestart');
       this.scene.start('SceneMain');
-    }, this);
+    });
   }
 }
 

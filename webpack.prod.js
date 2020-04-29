@@ -1,26 +1,30 @@
 const merge = require('webpack-merge');
+const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const dev = require('./webpack.dev.js');
+const common = require('./webpack.common');
 
-module.exports = merge(dev, {
+module.exports = merge(common, {
   mode: 'production',
   output: {
-    filename: 'bundle.min.js',
-  },
-  devtool: false,
-  performance: {
-    maxEntrypointSize: 900000,
-    maxAssetSize: 900000,
+    filename: '[name]-[contentHash].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
   },
   optimization: {
     minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          output: {
-            comments: false,
-          },
+      new TerserPlugin(),
+      new HtmlWebpackPlugin({
+        template: './src/template.html',
+        minify: {
+          removeAttributeQuotes: true,
+          collapseWhitespace: true,
+          removeComments: true,
         },
       }),
     ],
   },
+  plugins: [
+    new CleanWebpackPlugin(),
+  ],
 });

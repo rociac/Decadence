@@ -6,13 +6,14 @@ class SceneMainMenu extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('town', './assets/town.png');
-    this.load.image('btnPlay', './assets/btnPlay.png');
-    this.load.image('btnPlayDown', './assets/btnPlayDown.png');
-    this.load.image('btnPlayHover', './assets/btnPlayHover.png');
+    this.load.image('town', './src/assets/town.png');
+    this.load.image('btnPlay', './src/assets/btnPlay.png');
+    this.load.image('btnPlayDown', './src/assets/btnPlayDown.png');
+    this.load.image('btnPlayHover', 'src/assets/btnPlayHover.png');
   }
 
   create() {
+    this.userName = prompt('Enter Username');
     this.add.image(400, 300, 'town').setScale(1.8);
 
     this.title = this.add.text(this.game.config.width * 0.5, 128, 'DECADENCE', {
@@ -33,15 +34,15 @@ class SceneMainMenu extends Phaser.Scene {
 
     this.btnPlay.on('pointerover', () => {
       this.btnPlay.setTexture('btnPlayHover');
-    }, this);
+    });
 
     this.btnPlay.on('pointerout', () => {
-      this.setTexture('btnPlay');
+      this.btnPlay.setTexture('btnPlay');
     });
 
     this.btnPlay.on('pointerdown', () => {
       this.btnPlay.setTexture('btnPlayDown');
-    }, this);
+    });
 
     this.btnPlay.on('pointerup', () => {
       this.btnPlay.setTexture('btnPlay');
