@@ -41,7 +41,7 @@ class SceneGameOver extends Phaser.Scene {
         fontStyle: 'bold',
         color: '#ffffff',
         align: 'center',
-      }
+      },
     );
 
     this.score.setOrigin(0.5);
@@ -49,7 +49,7 @@ class SceneGameOver extends Phaser.Scene {
     this.btnRestart = this.add.sprite(
       this.game.config.width * 0.5,
       this.game.config.height * 0.5,
-      'btnRestart'
+      'btnRestart',
     );
 
     this.btnRestart.setInteractive();
