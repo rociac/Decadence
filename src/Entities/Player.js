@@ -31,7 +31,7 @@ class Player extends Entity {
   moveLeft() {
     this.body.setVelocityX(-this.getData('speed'));
     this.setFlipX(true);
-    this.body.setOffset(13, 9)
+    this.body.setOffset(13, 9);
     if (this.body.onFloor()) {
       this.play('run', true);
     }

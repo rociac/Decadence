@@ -5,7 +5,7 @@ import HellBeast from './Entities/HellBeast';
 import heroIdle from './assets/hero-idle.png';
 import heroRun from './assets/hero-run.png';
 import heroJump from './assets/hero-jump.png';
-import heroAttack from './assets/hero-attack.png'
+import heroAttack from './assets/hero-attack.png';
 import heroHurt from './assets/hero-hurt.png';
 import skull from './assets/fire-skull.png';
 import beast from './assets/hell-beast-idle.png';
@@ -17,7 +17,6 @@ class SceneMain extends Phaser.Scene {
 
   preload() {
     this.load.image('town', './src/assets/town.png');
-    this.load.audio('song', './src/assets/song.mp3');
 
     this.load.spritesheet('hero', heroIdle, {
       frameWidth: 38,
@@ -70,8 +69,6 @@ class SceneMain extends Phaser.Scene {
 
   create() {
     this.add.image(400, 300, 'town').setScale(1.8);
-    // this.music = this.sound.add('song', { loop: 'true' });
-    // this.music.play();
 
     this.anims.create({
       key: 'idle',
@@ -156,11 +153,7 @@ class SceneMain extends Phaser.Scene {
           }
         } else if (Phaser.Math.Between(0, 10) >= 5) {
           if (this.getEnemiesByType('HellBeast').length < 5) {
-            enemy = new HellBeast(
-              this,
-              1200,
-              600,
-            );
+            enemy = new HellBeast(this, 1200, 600);
           }
         }
         if (enemy !== null) {
@@ -191,18 +184,25 @@ class SceneMain extends Phaser.Scene {
     this.sword.body.allowGravity = false;
     this.sword.setActive(false).setVisible(false);
 
-
     this.container = this.add.container(0, 0, [this.player, this.sword]);
 
-    this.physics.add.collider(this.container.list[1], this.enemies, (player, enemy) => {
-      if (enemy) {
-        enemy.explode(true);
-        this.player.data.values.score += 50;
-      }
-    });
+    this.physics.add.collider(
+      this.container.list[1],
+      this.enemies,
+      (player, enemy) => {
+        if (enemy) {
+          enemy.explode(true);
+          this.player.data.values.score += 50;
+        }
+      },
+    );
 
     this.physics.add.overlap(this.player, this.enemies, (player, enemy) => {
-      if (!player.getData('isDead') && !enemy.getData('isDead') && !player.getData('isHurt')) {
+      if (
+        !player.getData('isDead')
+        && !enemy.getData('isDead')
+        && !player.getData('isHurt')
+      ) {
         player.hurt();
         enemy.explode(true);
         player.anims.play('hurt');
@@ -211,7 +211,6 @@ class SceneMain extends Phaser.Scene {
         });
       }
     });
-
   }
 
   getEnemiesByType(type) {
@@ -230,7 +229,10 @@ class SceneMain extends Phaser.Scene {
     this.lives.setText(`LIVES:${this.player.getData('hitPoints')}`);
     if (!this.player.getData('isDead')) {
       this.player.update();
-      if (Phaser.Input.Keyboard.JustDown(this.keyK) && !this.player.getData('isHurt')) {
+      if (
+        Phaser.Input.Keyboard.JustDown(this.keyK)
+        && !this.player.getData('isHurt')
+      ) {
         this.container.list[1].body.enable = true;
         this.container.list[0].body.setOffset(30, 9);
         this.container.list[1].x = this.player.x;

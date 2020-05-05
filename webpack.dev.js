@@ -20,8 +20,8 @@ module.exports = merge(common, {
           'style-loader',
           'css-loader',
           'sass-loader',
-        ]
-      }
-    ]
-  }
+        ],
+      },
+    ],
+  },
 });

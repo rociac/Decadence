@@ -29,7 +29,7 @@ module.exports = merge(common, {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin({ filename: '[name]-[contentHash].css' })
+    new MiniCssExtractPlugin({ filename: '[name]-[contentHash].css' }),
   ],
   module: {
     rules: [
@@ -38,9 +38,9 @@ module.exports = merge(common, {
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
-          'sass-loader'
-        ]
-      }
-    ]
-  }
+          'sass-loader',
+        ],
+      },
+    ],
+  },
 });

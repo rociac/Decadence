@@ -16,7 +16,7 @@ class SceneGameOver extends Phaser.Scene {
 
   init(data) {
     this.user = data.name;
-    this.points = data.score;
+    this.points = parseInt(data.score, 10);
   }
 
   create() {
@@ -31,21 +31,25 @@ class SceneGameOver extends Phaser.Scene {
     });
     this.title.setOrigin(0.5);
 
-    this.score = this.add.text(this.game.config.width * 0.5, 230, `SCORE: ${this.points}`, {
-      fontFamily: 'monospace',
-      fontSize: 30,
-      fontStyle: 'bold',
-      color: '#ffffff',
-      align: 'center',
-    });
+    this.score = this.add.text(
+      this.game.config.width * 0.5,
+      230,
+      `SCORE: ${this.points}`,
+      {
+        fontFamily: 'monospace',
+        fontSize: 30,
+        fontStyle: 'bold',
+        color: '#ffffff',
+        align: 'center',
+      }
+    );
 
     this.score.setOrigin(0.5);
-
 
     this.btnRestart = this.add.sprite(
       this.game.config.width * 0.5,
       this.game.config.height * 0.5,
-      'btnRestart',
+      'btnRestart'
     );
 
     this.btnRestart.setInteractive();
@@ -64,7 +68,7 @@ class SceneGameOver extends Phaser.Scene {
 
     this.btnRestart.on('pointerup', () => {
       this.btnRestart.setTexture('btnRestart');
-      this.scene.start('SceneMain');
+      this.scene.start('SceneMainMenu');
     });
   }
 
@@ -81,17 +85,13 @@ class SceneGameOver extends Phaser.Scene {
       method: 'POST',
     };
 
-    fetch(url, params)
-      .then(response => response.json())
-      .catch(error => console.error('Error:', error))
-      .then(response => console.log('Success:', response));
-
-    // try {
-    //   const response = await fetch(url, params);
-    //   const postLeaderboardData = await response.json();
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    try {
+      const response = await fetch(url, params);
+      const postLeaderboardData = await response.json();
+      return postLeaderboardData;
+    } catch (e) {
+      return e;
+    }
   }
 }
 

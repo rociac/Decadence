@@ -18,6 +18,7 @@ class SceneMainMenu extends Phaser.Scene {
 
   create() {
     this.add.image(400, 300, 'town').setScale(1.8);
+
     this.getLeaderboard();
 
     this.inputField = document.querySelector('.username');
@@ -30,13 +31,18 @@ class SceneMainMenu extends Phaser.Scene {
       align: 'center',
     });
 
-    this.usernameText = this.add.text(this.game.config.width * 0.5, 210, 'USERNAME', {
-      fontFamily: 'monospace',
-      fontSize: 18,
-      fontStyle: 'bold',
-      color: '#ffffff',
-      aling: 'center',
-    });
+    this.usernameText = this.add.text(
+      this.game.config.width * 0.5,
+      240,
+      'USERNAME',
+      {
+        fontFamily: 'monospace',
+        fontSize: 18,
+        fontStyle: 'bold',
+        color: '#ffffff',
+        aling: 'center',
+      },
+    );
 
     this.btnPlay = this.add.sprite(
       this.game.config.width * 0.5,
@@ -62,7 +68,7 @@ class SceneMainMenu extends Phaser.Scene {
       if (this.inputField.value.length > 0) {
         const playerName = this.inputField.value;
         this.inputField.style.display = 'none';
-        this.scene.start('SceneMain', { playerName: playerName });
+        this.scene.start('SceneMain', { playerName });
       } else {
         this.inputField.classList.add('error');
       }
@@ -74,15 +80,28 @@ class SceneMainMenu extends Phaser.Scene {
   }
 
   async getLeaderboard() {
-    const gameId = 'yTrKl8bdMoKRXSDAOur8';
-    const baseUrl = `https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/${gameId}/scores/`;
+    this.gameId = 'yTrKl8bdMoKRXSDAOur8';
+    this.baseUrl = `https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/${this.gameId}/scores/`;
+    this.leaderboard = document.querySelector('.leaderboard__data');
     try {
-      const response = await fetch(baseUrl);
+      const response = await fetch(this.baseUrl);
       const leaderboardData = await response.json();
-      const leaderboard = document.querySelector('.leaderboard__data');
-      console.log(leaderboardData.result);
+      const sortedLeaderboard = leaderboardData.result.sort(
+        (a, b) => parseInt(b.score, 10) - parseInt(a.score, 10),
+      );
+      sortedLeaderboard.forEach(user => {
+        const li = document.createElement('li');
+        const name = document.createElement('p');
+        const score = document.createElement('p');
+        name.innerHTML += user.user;
+        score.innerHTML += user.score;
+        li.appendChild(name);
+        li.appendChild(score);
+        this.leaderboard.appendChild(li);
+      });
+      return sortedLeaderboard;
     } catch (e) {
-      console.log(e);
+      return e;
     }
   }
 
