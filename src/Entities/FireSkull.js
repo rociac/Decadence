@@ -6,7 +6,8 @@ class FireSkull extends Entity {
     super(scene, x, y, 'fire-skull', 'FireSkull');
     this.play('skull');
     this.setFlipX(true);
-    this.angle = this.body.angle;
+    this.body.setSize(80, 80);
+    this.body.setOffset(10, 25);
     this.body.setCollideWorldBounds(true);
     this.body.velocity.x = Phaser.Math.Between(200, 250);
   }

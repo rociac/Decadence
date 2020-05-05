@@ -1,4 +1,8 @@
 import Phaser from 'phaser';
+import town from './assets/town.png';
+import buttonPlay from './assets/btnPlay.png';
+import buttonPlayDown from './assets/btnPlayDown.png';
+import buttonPlayHover from './assets/btnPlayHover.png';
 
 class SceneMainMenu extends Phaser.Scene {
   constructor() {
@@ -6,15 +10,17 @@ class SceneMainMenu extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('town', './src/assets/town.png');
-    this.load.image('btnPlay', './src/assets/btnPlay.png');
-    this.load.image('btnPlayDown', './src/assets/btnPlayDown.png');
-    this.load.image('btnPlayHover', 'src/assets/btnPlayHover.png');
+    this.load.image('town', town);
+    this.load.image('btnPlay', buttonPlay);
+    this.load.image('btnPlayDown', buttonPlayDown);
+    this.load.image('btnPlayHover', buttonPlayHover);
   }
 
   create() {
-    this.userName = prompt('Enter Username');
     this.add.image(400, 300, 'town').setScale(1.8);
+    this.getLeaderboard();
+
+    this.inputField = document.querySelector('.username');
 
     this.title = this.add.text(this.game.config.width * 0.5, 128, 'DECADENCE', {
       fontFamily: 'monospace',
@@ -22,6 +28,14 @@ class SceneMainMenu extends Phaser.Scene {
       fontStyle: 'bold',
       color: '#ffffff',
       align: 'center',
+    });
+
+    this.usernameText = this.add.text(this.game.config.width * 0.5, 210, 'USERNAME', {
+      fontFamily: 'monospace',
+      fontSize: 18,
+      fontStyle: 'bold',
+      color: '#ffffff',
+      aling: 'center',
     });
 
     this.btnPlay = this.add.sprite(
@@ -45,12 +59,38 @@ class SceneMainMenu extends Phaser.Scene {
     });
 
     this.btnPlay.on('pointerup', () => {
+      if (this.inputField.value.length > 0) {
+        const playerName = this.inputField.value;
+        this.inputField.style.display = 'none';
+        this.scene.start('SceneMain', { playerName: playerName });
+      } else {
+        this.inputField.classList.add('error');
+      }
       this.btnPlay.setTexture('btnPlay');
-      this.scene.start('SceneMain');
     });
 
     this.title.setOrigin(0.5);
+    this.usernameText.setOrigin(0.5);
   }
+
+  async getLeaderboard() {
+    const gameId = 'yTrKl8bdMoKRXSDAOur8';
+    const baseUrl = `https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/${gameId}/scores/`;
+    try {
+      const response = await fetch(baseUrl);
+      const leaderboardData = await response.json();
+      const leaderboard = document.querySelector('.leaderboard__data');
+      console.log(leaderboardData.result);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  // setInfo(leaderboardData) {
+  //   const infoElements = `
+
+  //   `
+  // }
 }
 
 export default SceneMainMenu;

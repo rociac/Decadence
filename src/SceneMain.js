@@ -2,6 +2,13 @@ import Phaser from 'phaser';
 import Player from './Entities/Player';
 import FireSkull from './Entities/FireSkull';
 import HellBeast from './Entities/HellBeast';
+import heroIdle from './assets/hero-idle.png';
+import heroRun from './assets/hero-run.png';
+import heroJump from './assets/hero-jump.png';
+import heroAttack from './assets/hero-attack.png'
+import heroHurt from './assets/hero-hurt.png';
+import skull from './assets/fire-skull.png';
+import beast from './assets/hell-beast-idle.png';
 
 class SceneMain extends Phaser.Scene {
   constructor() {
@@ -12,37 +19,37 @@ class SceneMain extends Phaser.Scene {
     this.load.image('town', './src/assets/town.png');
     this.load.audio('song', './src/assets/song.mp3');
 
-    this.load.spritesheet('hero', './src/assets/hero-idle.png', {
+    this.load.spritesheet('hero', heroIdle, {
       frameWidth: 38,
       frameHeight: 48,
     });
 
-    this.load.spritesheet('hero-run', './src/assets/hero-run.png', {
+    this.load.spritesheet('hero-run', heroRun, {
       frameWidth: 66,
       frameHeight: 48,
     });
 
-    this.load.spritesheet('hero-jump', './src/assets/hero-jump.png', {
+    this.load.spritesheet('hero-jump', heroJump, {
       frameWidth: 61,
       frameHeight: 61,
     });
 
-    this.load.spritesheet('hero-attack', './src/assets/hero-attack.png', {
+    this.load.spritesheet('hero-attack', heroAttack, {
       frameWidth: 96,
       frameHeight: 48,
     });
 
-    this.load.spritesheet('hero-hurt', './src/assets/hero-hurt.png', {
+    this.load.spritesheet('hero-hurt', heroHurt, {
       frameWidth: 48,
       frameHeight: 48,
     });
 
-    this.load.spritesheet('fire-skull', './src/assets/fire-skull.png', {
+    this.load.spritesheet('fire-skull', skull, {
       frameWidth: 96,
       frameHeight: 112,
     });
 
-    this.load.spritesheet('hell-beast-idle', './src/assets/hell-beast-idle.png', {
+    this.load.spritesheet('hell-beast-idle', beast, {
       frameWidth: 55,
       frameHeight: 67,
     });
@@ -57,10 +64,14 @@ class SceneMain extends Phaser.Scene {
     );
   }
 
+  init(data) {
+    this.playerName = data.playerName;
+  }
+
   create() {
     this.add.image(400, 300, 'town').setScale(1.8);
-    this.music = this.sound.add('song', { loop: 'true' });
-    this.music.play();
+    // this.music = this.sound.add('song', { loop: 'true' });
+    // this.music.play();
 
     this.anims.create({
       key: 'idle',
@@ -125,6 +136,8 @@ class SceneMain extends Phaser.Scene {
       'hero',
     );
 
+    this.player.setData('name', this.playerName);
+
     this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.keyK = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
@@ -174,33 +187,31 @@ class SceneMain extends Phaser.Scene {
       align: 'center',
     });
 
-    this.physics.add.collider(this.player, this.enemies, (
-      player,
-      enemy,
-    ) => {
-      if (
-        enemy
-        && !player.getData('isAttacking')
-        && !player.getData('isHurt')
-      ) {
+    this.sword = this.physics.add.sprite(this.player.x, this.player.y);
+    this.sword.body.allowGravity = false;
+    this.sword.setActive(false).setVisible(false);
+
+
+    this.container = this.add.container(0, 0, [this.player, this.sword]);
+
+    this.physics.add.collider(this.container.list[1], this.enemies, (player, enemy) => {
+      if (enemy) {
         enemy.explode(true);
+        this.player.data.values.score += 50;
+      }
+    });
+
+    this.physics.add.overlap(this.player, this.enemies, (player, enemy) => {
+      if (!player.getData('isDead') && !enemy.getData('isDead') && !player.getData('isHurt')) {
         player.hurt();
-        player.play('hurt');
-        player.on('animationcomplete', () => {
+        enemy.explode(true);
+        player.anims.play('hurt');
+        player.once('animationcomplete', () => {
           player.setData('isHurt', false);
         });
       }
     });
 
-    this.physics.add.overlap(this.player, this.enemies, (
-      player,
-      enemy,
-    ) => {
-      if (player.getData('isAttacking')) {
-        enemy.destroy();
-        player.data.values.score += 50;
-      }
-    });
   }
 
   getEnemiesByType(type) {
@@ -219,13 +230,23 @@ class SceneMain extends Phaser.Scene {
     this.lives.setText(`LIVES:${this.player.getData('hitPoints')}`);
     if (!this.player.getData('isDead')) {
       this.player.update();
-      if (this.keyK.isDown && !this.player.getData('isHurt')) {
+      if (Phaser.Input.Keyboard.JustDown(this.keyK) && !this.player.getData('isHurt')) {
+        this.container.list[1].body.enable = true;
+        this.container.list[0].body.setOffset(30, 9);
+        this.container.list[1].x = this.player.x;
+        this.container.list[1].y = this.player.y;
+        this.container.list[1].body.setSize(60, 10);
+        if (this.player.getData('moveRight')) {
+          this.container.list[1].body.setOffset(40, 0);
+        } else if (this.player.getData('moveLeft')) {
+          this.container.list[1].body.setOffset(-75, 0);
+        }
+        this.player.anims.stop();
+        this.player.play('attack', true);
         this.player.setData('isAttacking', true);
-        this.time.addEvent({
-          delay: 400,
-          callback: () => {
-            this.player.setData('isAttacking', false);
-          },
+        this.player.once('animationcomplete', () => {
+          this.container.list[1].body.enable = false;
+          this.player.setData('isAttacking', false);
         });
       } else {
         if (
@@ -241,13 +262,6 @@ class SceneMain extends Phaser.Scene {
         ) {
           this.player.moveLeft();
         }
-
-        if (this.keyD.isUp) {
-          this.player.setData('moveRight', false);
-        }
-        if (this.keyA.isUp) {
-          this.player.setData('moveLeft', false);
-        }
         if (
           this.keySpace.isDown
           && this.player.body.onFloor()
@@ -260,24 +274,9 @@ class SceneMain extends Phaser.Scene {
           && this.player.body.velocity.y === 0
           && this.player.body.onFloor()
           && !this.player.getData('isHurt')
+          && !this.player.getData('isAttacking')
         ) {
           this.player.play('idle', true);
-        }
-      }
-    }
-
-    for (let i = 0; i < this.enemies.getChildren().length; i += 1) {
-      const enemy = this.enemies.getChildren()[i];
-      enemy.update();
-      if (
-        enemy.x < -enemy.displayWidth
-        || enemy.x > this.game.config.width + enemy.displayWidth
-      ) {
-        if (enemy) {
-          if (enemy.onDestroy !== undefined) {
-            enemy.onDestroy();
-          }
-          enemy.destroy();
         }
       }
     }
