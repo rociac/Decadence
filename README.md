@@ -1,8 +1,13 @@
 # Decadence
 
-> This is a small and simple game built for the JavaScript Capstone Project, consists on a character killing demons each one grants points. The goal is to have the biggest score possible.
+> This is a small and simple game built for the JavaScript Capstone Project.
+> The game consists on our brave hero killing endless demons, each demon slain grants you some points. Try to get as much points as possible and at the end they will be saved in the leaderboard!
 
->Controls:
+You can attack the demons or evade the fire skulls, althought i recommend to defeat them all!
+
+The game is build with ES6 and Phaser, using ES6 modules and webpack to handle the assets.
+
+> Controls:
 
 A (Move Left)
 D (Move Right)
@@ -19,23 +24,28 @@ Space (Jump)
 
 ## Live Demo
 
-[Live Demo Link](https://stoic-hypatia-a5d8ba.netlify.app/)
+[Live Demo Link](https://epic-hoover-65ef82.netlify.app)
 
 ## Installation
 
 1. Clone the repository in your local folder.
+
 ```
 git clone https://github.com/rociac/Decadence.git
 ```
+
 2. Run
+
 ```
 npm install
 ```
+
 ```
 npm start
 ```
 
 3. To create a production build run
+
 ```
 npx run build
 ```
